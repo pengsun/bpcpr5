@@ -4,10 +4,12 @@ classdef convdag_bpcpr
   
   % options
   properties
+    Nstar;     % #augmented size
     beg_epoch; % beggining epoch
     num_epoch; % number of epoches
-    batch_sz; % batch size
-    dir_mo; % directory for models
+    batch_sz;  % batch size
+    dir_mo;    % directory for models
+    iter_mo;   % save model every #iter_mo
     is_tightMem; % if tight memory?
   end
   
@@ -24,6 +26,7 @@ classdef convdag_bpcpr
       ob.beg_epoch = 1; % begining epoch
       ob.num_epoch = 5; % number of epoches
       ob.batch_sz = 128; % batch size
+      ob.iter_mo = 50; % save model every #iter_mo
       ob.dir_mo = './mo_zoo/foobar'; % directory for models
       ob.is_tightMem = false;
       
@@ -47,9 +50,8 @@ classdef convdag_bpcpr
         ob = train_one_epoch(ob, X,Y);
         ob = post_train_one_epoch(ob, t, size(X,4));
         
-        % save the result
-        fn_cur_mo = fullfile(ob.dir_mo, sprintf('dag_epoch_%d.mat',t) );
-        ob = save_model (ob, fn_cur_mo);
+        % always save the model when one epoch is done
+        ob = save_cur_model(ob);
       end % for t
       
     end % train
@@ -137,22 +139,21 @@ classdef convdag_bpcpr
     % train one epoch
     
       % initialize a batch index generator
-      hbat = bat_gentor();
+      hbat = batpose_gentor();
       N = size(X, 4);
-      hbat = reset(hbat, N, ob.batch_sz);
+      hbat = reset(hbat, N, ob.Nstar, ob.batch_sz);
       
       % train every batch
       for i_bat = 1 : hbat.num_bat
         t_elapsed = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-     
+        
         % get batch 
-        ind = get_idx(hbat, i_bat);
-        X_bat = X(:,:,:, ind);
-        Y_bat = Y(:, ind);
+        [bat_I,bat_pGT,bat_pInit] = gen_data(hbat, X,Y);
         
         % set source nodes
-        ob.the_dag.i(1).a = X_bat;
-        ob.the_dag.i(2).a = Y_bat;
+        ob.the_dag.i(1).a = bat_pInit;
+        ob.the_dag.i(2).a = bat_I;
+        ob.the_dag.i(3).a = bat_pGT;
         
         % fire: do the batch training
         ob = prepare_train_one_bat(ob, i_bat);
@@ -166,6 +167,10 @@ classdef convdag_bpcpr
         fprintf('time = %.3fs, speed = %.0f images/s\n',...
           t_elapsed, ob.batch_sz/t_elapsed);
         
+        % if saving model?
+        if ( mod(i_bat, ob.iter_mo) == 0  )
+          ob = save_cur_mo(ob);
+        end
       end % for ii
     
     end % train_one_eporch
@@ -220,8 +225,16 @@ classdef convdag_bpcpr
       
     end % clear_im_data
     
-    function ob = save_model(ob, fn)
+    function fn = get_cur_fnmodel(ob)
+      i_epoch = ob.cc.epoch_cnt;
+      i_iter  = ob.cc.iter_cnt;
+      fn = fullfile(ob.dir_mo,...
+        sprintf('ep%d_it%d.mat',i_epoch,i_iter) );
+    end
+    
+    function ob = save_cur_model(ob)
       ob = clear_im_data(ob);
+      fn = get_cur_fnmodel(ob);
       save(fn, 'ob');
     end % save_model
     

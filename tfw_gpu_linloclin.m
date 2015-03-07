@@ -30,7 +30,7 @@ classdef tfw_gpu_linloclin < tfw_i
       ob.i = n_data(); % X the feature
       ob.o = n_data(); % pout the prediction
       
-      %%% set the parameters
+      %%% collect the parameters
       ob.p = dag_util.collect_params( ob.tfs );
     end % tfw_rpd_reg
     

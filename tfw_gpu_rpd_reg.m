@@ -60,7 +60,7 @@ classdef tfw_gpu_rpd_reg < tfw_i
       ob.i(1).d = ob.tfs{1}.i.d;
       ob.i(2).d = ob.tfs{2}.i(2).d;
     end % bprop
-    
+         
   end % methods
   
 end

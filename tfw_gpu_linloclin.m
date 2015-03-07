@@ -59,8 +59,7 @@ classdef tfw_gpu_linloclin < tfw_i
       end
       
       %%% Internal Input --> Outer Input: unnecessary here      
-      ob.i(1).d = ob.tfs{1}.i.d;
-      ob.i(2).d = ob.tfs{2}.i(2).d;
+      ob.i.d = ob.tfs{1}.i.d;
     end % bprop
     
   end % methods

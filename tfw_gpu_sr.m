@@ -1,17 +1,17 @@
-classdef tfw_gpu_rpd_reg < tfw_i
-  %TFW_RPD_REG RPD feature + a regressor
+classdef tfw_gpu_sr < tfw_i
+  %tfw_gpu_sr Stage Regressor: the feature extractor + a regressor
   %   Detailed explanation goes here
   
   properties
   end
   
   methods
-    function ob = tfw_gpu_rpd_reg(hreg)
+    function ob = tfw_gpu_sr(hfet, hreg)
       %%% set the connection structure: a triangular connection
       % 1. multiplexer
       tfs{1} = tf_mtx(2);
       % 2. rpd feature
-      tfs{2}      = tf_fet_rpd();
+      tfs{2}      = hfet;
       tfs{2}.i(1) = tfs{1}.o(1);
       % 3. the regressor
       tfs{3} = hreg;

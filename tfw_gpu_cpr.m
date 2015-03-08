@@ -7,23 +7,17 @@ classdef tfw_gpu_cpr < tfw_i
   
   methods
     
-    function ob = tfw_gpu_cpr()
+    function ob = tfw_gpu_cpr(tfs_sr)
       %#ok<*AGROW>
       %%% network connection
-      T = 8;
+      % number of stage regressors
+      T = numel(tfs_sr);
       % The multiplexer for image I
       tfs{1} = tf_mtx(T);   
       % The T stage regressors
-      for j = 1 : T        
-        % the regressor along
-        % TODO: the correct parameters
-        the_mask = zeros(1,1,10,100);
-        sz1 = [1,1,10,100];
-        sz2 = [1,1,100,90];
-        hreg = tfw_gpu_linloclin(the_mask, sz1, sz2);
-        
+      for j = 1 : T
         % the stage regressor (feature + regressor)
-        tfs{1+j} = tfw_gpu_rpd_reg(hreg); 
+        tfs{1+j} = tfs_sr{j}; 
         if (j>1)
           tfs{1+j}.i(1) = tfs{j}.o;  % p: connect to last stage
         end
@@ -35,11 +29,9 @@ classdef tfw_gpu_cpr < tfw_i
       % write back
       ob.tfs = tfs;
       
-      
       %%% Input & Output data
       ob.i = [n_data(), n_data(), n_data()]; % pInit, I, pGT
       ob.o = n_data();                       % pPre the prediction
-      
       
       %%% Collect the parameters
       ob.p = dag_util.collect_params( ob.tfs );

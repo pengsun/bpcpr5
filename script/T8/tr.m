@@ -20,13 +20,16 @@ h.dir_mo = dir_mo;
 fn_data  = fullfile(...
   '/home/ubuntu/A/data/facepose/300-Wnorm_matlab',... % directory 
   'tr_rescale_grad.mat');                             % file name
+%% cpu or gpu
+h = to_cpu(h);
+% h = to_gpu(h);
 %% do the training
 [X, Y] = load_tr_data(fn_data);
 train(h, X,Y);
 
 function h = create_dag_from_scratch ()
 tfs_sr = create_tfs_sr();
-hdag = tfw_gpu_cpr(tfs_sr);
+hdag = tfw_cpr(tfs_sr);
 h = convdag();
 h.the_dag = hdag;
 
@@ -39,13 +42,13 @@ for j = 1 : T
   
   % the regressor
   % TODO: the correct params
-  the_mask = gpuArray( zeors(1,1,3,7, 'single') );
+  the_mask = zeors(1,1,3,7, 'single');
   sz1      = [1,1,1,1];
   sz2      = [1,1,1,1];
-  hreg = tfw_gpu_linloclin(the_mask, sz1, sz2);
+  hreg = tfw_linloclin(the_mask, sz1, sz2);
   
   % the stage regressor (feature + regressor)
-  tfs_sr{j} = tfw_gpu_sr(hfet, hreg); %#ok<AGROW>
+  tfs_sr{j} = tfw_sr(hfet, hreg); %#ok<AGROW>
 end
 
 function ob = create_dag_from_file (fn_mo)

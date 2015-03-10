@@ -1,4 +1,4 @@
-classdef tfw_gpu_linloclin < tfw_i
+classdef tfw_linloclin < tfw_i
   %tfw_gpu_linloclin A regressor: local linear + Relu + Dropout + linear
   %   Detailed explanation goes here
   
@@ -6,13 +6,13 @@ classdef tfw_gpu_linloclin < tfw_i
   end
   
   methods
-    function ob = tfw_gpu_linloclin(mask_, sz1, sz2)
+    function ob = tfw_linloclin(mask_, sz1, sz2)
       %%% set the connection structure: a triangular connection
       f = 0.01;
       % 1. linear with mask
       tfs{1}        = tf_conv_mask(mask_);
-      tfs{1}.p(1).a = gpuArray( f*randn(sz1, 'single') );
-      tfs{1}.p(2).a = gpuArray( zeros(1,sz1(end), 'single') );
+      tfs{1}.p(1).a = f*randn(sz1, 'single');
+      tfs{1}.p(2).a = zeros(1,sz1(end), 'single');
       % 2. ReLu
       tfs{2}   = tf_relu();
       tfs{2}.i = tfs{1}.o;
@@ -21,8 +21,8 @@ classdef tfw_gpu_linloclin < tfw_i
       tfs{3}.i = tfs{2}.o;
       % 4. linear
       tfs{4}        = tf_conv();
-      tfs{4}.p(1).a = gpuArray( f*randn(sz2, 'single') );
-      tfs{4}.p(2).a = gpuArray( zeros(1,sz2(end), 'single') );
+      tfs{4}.p(1).a = f*randn(sz2, 'single');
+      tfs{4}.p(2).a = zeros(1,sz2(end), 'single');
       % write back
       ob.tfs = tfs;
       
@@ -41,7 +41,7 @@ classdef tfw_gpu_linloclin < tfw_i
        %%% fprop for all
        for i = 1 : numel( ob.tfs )
          ob.tfs{i} = fprop(ob.tfs{i});
-         wait(gpuDevice);
+         ob.ab.sync();
        end
        
        %%% Internal Output --> Outer Output: set the loss
@@ -55,7 +55,7 @@ classdef tfw_gpu_linloclin < tfw_i
       %%% bprop for all
       for i = numel(ob.tfs) : -1 : 1
         ob.tfs{i} = bprop(ob.tfs{i});
-        wait(gpuDevice);
+        ob.ab.sync();
       end
       
       %%% Internal Input --> Outer Input: unnecessary here      

@@ -1,4 +1,4 @@
-classdef tfw_gpu_sr < tfw_i
+classdef tfw_sr < tfw_i
   %tfw_gpu_sr Stage Regressor: the feature extractor + a regressor
   %   Detailed explanation goes here
   
@@ -6,7 +6,7 @@ classdef tfw_gpu_sr < tfw_i
   end
   
   methods
-    function ob = tfw_gpu_sr(hfet, hreg)
+    function ob = tfw_sr(hfet, hreg)
       %%% set the connection structure: a triangular connection
       % 1. multiplexer
       tfs{1} = tf_mtx(2);
@@ -14,10 +14,10 @@ classdef tfw_gpu_sr < tfw_i
       tfs{2}      = hfet;
       tfs{2}.i(1) = tfs{1}.o(1);
       % 3. the regressor
-      tfs{3} = hreg;
+      tfs{3}   = hreg;
       tfs{3}.i = tfs{2}.o;
       % 4. summer
-      tfs{4} = tf_add(2);
+      tfs{4}      = tf_add(2);
       tfs{4}.i(1) = tfs{3}.o;
       tfs{4}.i(2) = tfs{1}.o(2);
       % write back
@@ -37,9 +37,8 @@ classdef tfw_gpu_sr < tfw_i
        ob.tfs{2}.i(2).a = ob.i(2).a; % I
        
        %%% fprop for all
-       for i = 1 : numel( ob.tfs )
+       for i = 1 : numel( ob.tfs ) % ob.sync() is called in the tfs
          ob.tfs{i} = fprop(ob.tfs{i});
-         wait(gpuDevice);
        end
        
        %%% Internal Output --> Outer Output: set the loss
@@ -51,9 +50,8 @@ classdef tfw_gpu_sr < tfw_i
       ob.tfs{end}.o.d = ob.o.d;
       
       %%% bprop for all
-      for i = numel(ob.tfs) : -1 : 1
+      for i = numel(ob.tfs) : -1 : 1 % ob.sync() is called in the tfs
         ob.tfs{i} = bprop(ob.tfs{i});
-        wait(gpuDevice);
       end
       
       %%% Internal Input --> Outer Input: unnecessary here      

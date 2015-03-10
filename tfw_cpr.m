@@ -1,4 +1,4 @@
-classdef tfw_gpu_cpr < tfw_i
+classdef tfw_cpr < tfw_i
   %TFW_GPU_CPR Summary of this class goes here
   %   Detailed explanation goes here
   
@@ -7,8 +7,9 @@ classdef tfw_gpu_cpr < tfw_i
   
   methods
     
-    function ob = tfw_gpu_cpr(tfs_sr)
+    function ob = tfw_cpr(tfs_sr)
       %#ok<*AGROW>
+      
       %%% network connection
       % number of stage regressors
       T = numel(tfs_sr);
@@ -39,18 +40,17 @@ classdef tfw_gpu_cpr < tfw_i
     
     function ob = fprop(ob)
        %%% Outer Input --> Internal Input
-       ob.tfs{2}.i(1).a   = ob.i(1).a; % pInit
-       ob.tfs{1}.i.a      = ob.i(2).a; % I
-       ob.tfs{end}.i(2).a = ob.i(3).a; % pGT
+       ob.tfs{2}.i(1).a   = ob.ab.cvt_data( ob.i(1).a ); % pInit
+       ob.tfs{1}.i.a      = ob.ab.cvt_data( ob.i(2).a ); % I
+       ob.tfs{end}.i(2).a = ob.ab.cvt_data( ob.i(3).a ); % pGT
        
        %%% fprop for all
-       for i = 1 : numel( ob.tfs )
+       for i = 1 : numel( ob.tfs ) % sync() is called in sub tf
          ob.tfs{i} = fprop(ob.tfs{i});
-         wait(gpuDevice);
        end
        
        %%% Internal Output --> Outer Output: set the loss
-       %ob.o.a = ob.tfs{end}.o.a;      
+       ob.o.a = ob.tfs{end}.o.a;      
     end % fprop
     
     function ob = bprop(ob)
@@ -58,9 +58,8 @@ classdef tfw_gpu_cpr < tfw_i
       %ob.tfs{end}.o.d = ob.o.d;
       
       %%% bprop for all
-      for i = numel(ob.tfs) : -1 : 1
+      for i = numel(ob.tfs) : -1 : 1 % sync() is called in sub tf
         ob.tfs{i} = bprop(ob.tfs{i});
-        wait(gpuDevice);
       end
       
       %%% Internal Input --> Outer Input: unnecessary here      

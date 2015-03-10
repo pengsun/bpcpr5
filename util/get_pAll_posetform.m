@@ -13,10 +13,10 @@ function pAll = get_pAll_posetform(p, pMean, d)
   % for each image
   for i = 1 : N
     % similarity transform: from pMean to p
-    z = cp2tform(pMean', p(:,:,i)', 'nonreflective similarity');
+    z = fitgeotrans(pMean', p(:,:,i)', 'nonreflectivesimilarity');
     % get dd = ratate_scale(d) % [2,M,L]
     % only ratation and scaling are needed
-    dd = z.tdata.T(1:2,1:2) * reshape(d, [2,M*L]);
+    dd = z.T(1:2,1:2) * reshape(d, [2,M*L]);
     dd = reshape(dd, [2,M,L]); % [2,M,L]
     % the centroids
     pp = p(:,:,i); % [2,L]

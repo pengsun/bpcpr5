@@ -20,7 +20,7 @@ classdef tfw_cpr < tfw_i
         % the stage regressor (feature + regressor)
         tfs{1+j} = tfs_sr{j}; 
         if (j>1)
-          tfs{1+j}.i(1) = tfs{j}.o;  % p: connect to last stage
+          tfs{1+j}.i(1) = tfs{j}.o;  % p: connect to previous stage
         end
         tfs{1+j}.i(2) = tfs{1}.o(j); % I: connect to the mtx 
       end

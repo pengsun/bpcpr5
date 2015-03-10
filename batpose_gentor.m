@@ -5,6 +5,7 @@ classdef batpose_gentor
   properties
     N;       % number of original #instances
     i_bat;   % current batch count
+    num_bat; % 
   end
   
   properties
@@ -18,11 +19,15 @@ classdef batpose_gentor
     end
     
     function ob = reset(ob, N, Nstar, bat_sz)
+      ob.h1 = bat_gentor();
       ob.h1 = reset(ob.h1, Nstar, bat_sz);
+      ob.h2 = bat_gentor();
       ob.h2 = reset(ob.h2, Nstar, bat_sz);
       
       ob.N = N;
       ob.i_bat = 1;
+      assert( ob.h1.num_bat == ob.h2.num_bat );
+      ob.num_bat = ob.h1.num_bat;
     end % reset
     
     function [idx1,idx2] = get_idx (ob, ib)
@@ -57,8 +62,9 @@ classdef batpose_gentor
         ix = ix2(i);
         
         p_moving = pGT(:,:,ix); % [2,L]
-        z = cp2tform(p_moving', pMean', 'nonreflective similarity');
-        p_moved = tformfwd(z, p_moving(1,:)', p_moving(2,:)');
+        z = fitgeotrans(p_moving', pMean', 'nonreflectivesimilarity');
+        p_moved = transformPointsForward(...
+          z, [p_moving(1,:)', p_moving(2,:)'] );
         
         bat_pInit(:,:,i) = p_moved';
       end

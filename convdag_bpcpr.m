@@ -58,6 +58,9 @@ classdef convdag_bpcpr
     
     function Ypre = test (ob, X)
       
+      % enforced single
+      X = single(X);
+
       % prepare
       ob = prepare_test(ob);
       
@@ -137,7 +140,11 @@ classdef convdag_bpcpr
     
     function ob = train_one_epoch (ob, X,Y)
     % train one epoch
-    
+      
+      % enforced single
+      X = single(X);
+      Y = single(Y);
+      
       % initialize a batch index generator
       hbat = batpose_gentor();
       N = size(X, 4);
@@ -145,11 +152,13 @@ classdef convdag_bpcpr
       
       % train every batch
       for i_bat = 1 : hbat.num_bat
-        t_elapsed = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+        t_bat = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % get batch 
-        [bat_I,bat_pGT,bat_pInit] = gen_data(hbat, X,Y);
+        [bat_I,bat_pGT,bat_pInit] = get_data(hbat, X,Y, i_bat);
+        t_bat = toc(t_bat); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+        t_elapsed = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % set source nodes
         ob.the_dag.i(1).a = bat_pInit;
         ob.the_dag.i(2).a = bat_I;
@@ -162,14 +171,21 @@ classdef convdag_bpcpr
         t_elapsed = toc(t_elapsed); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % print 
+        % eopoch & iter
         fprintf('epoch %d, batch %d of %d, ',...
           ob.cc.epoch_cnt, i_bat, hbat.num_bat);
+        fprintf('batch gen time = %.3fs ',...
+          t_bat);
         fprintf('time = %.3fs, speed = %.0f images/s\n',...
           t_elapsed, ob.batch_sz/t_elapsed);
         
+        %tmp = gpuDevice(1);
+        %fprintf('gpu free memory = %d\n',...
+        %  tmp.FreeMemory/1024/1024);
+        
         % if saving model?
         if ( mod(i_bat, ob.iter_mo) == 0  )
-          ob = save_cur_mo(ob);
+          ob = save_cur_model(ob);
         end
       end % for ii
     
@@ -221,7 +237,7 @@ classdef convdag_bpcpr
       
       % clear .d for all parameters
       % TODO: set a swith here, as sometimes we want save the gradients
-      ob.the_dag = cl_p_d( ob.the_dag );
+      %ob.the_dag = cl_p_d( ob.the_dag );
       
     end % clear_im_data
     
@@ -235,7 +251,10 @@ classdef convdag_bpcpr
     function ob = save_cur_model(ob)
       ob = clear_im_data(ob);
       fn = get_cur_fnmodel(ob);
+      
+      fprintf('saving %s...', fn);
       save(fn, 'ob');
+      fprintf('done\n');
     end % save_model
     
   end % methods

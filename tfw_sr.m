@@ -33,30 +33,30 @@ classdef tfw_sr < tfw_i
     
     function ob = fprop(ob)
        %%% Outer Input --> Internal Input
-       ob.tfs{1}.i.a    = ob.i(1).a; % p
-       ob.tfs{2}.i(2).a = ob.i(2).a; % I
+       ob.tfs{1}.i.a    = ob.i(1).a; % p [2,L,N]
+       ob.tfs{2}.i(2).a = ob.i(2).a; % I [W,H,3,N]
        
        %%% fprop for all
        for i = 1 : numel( ob.tfs ) % ob.sync() is called in the tfs
          ob.tfs{i} = fprop(ob.tfs{i});
        end
        
-       %%% Internal Output --> Outer Output: set the loss
-       ob.o.a = ob.tfs{end}.o.a;      
+       %%% Internal Output --> Outer Output: 
+       ob.o.a = ob.tfs{end}.o.a; % pPre [2,L,N]
     end % fprop
     
     function ob = bprop(ob)
       %%% Outer output --> Internal output
-      ob.tfs{end}.o.d = ob.o.d;
-      
+      ob.tfs{end}.o.d = ob.o.d; % dPre: [2,L,N]
+         
       %%% bprop for all
       for i = numel(ob.tfs) : -1 : 1 % ob.sync() is called in the tfs
         ob.tfs{i} = bprop(ob.tfs{i});
       end
       
-      %%% Internal Input --> Outer Input: unnecessary here      
-      ob.i(1).d = ob.tfs{1}.i.d;
-      ob.i(2).d = ob.tfs{2}.i(2).d;
+      %%% Internal Input --> Outer Input
+      ob.i(1).d = ob.tfs{1}.i.d;    % [2,L,N]
+      ob.i(2).d = ob.tfs{2}.i(2).d; % [W,H,3,N]
     end % bprop
          
   end % methods

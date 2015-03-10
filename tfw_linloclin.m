@@ -6,10 +6,11 @@ classdef tfw_linloclin < tfw_i
   end
   
   methods
-    function ob = tfw_linloclin(mask_, sz1, sz2)
+    function ob = tfw_linloclin(mask_, sz2)
       %%% set the connection structure: a triangular connection
       f = 0.01;
       % 1. linear with mask
+      sz1 = size(mask_);
       tfs{1}        = tf_conv_mask(mask_);
       tfs{1}.p(1).a = f*randn(sz1, 'single');
       tfs{1}.p(2).a = zeros(1,sz1(end), 'single');
@@ -21,6 +22,7 @@ classdef tfw_linloclin < tfw_i
       tfs{3}.i = tfs{2}.o;
       % 4. linear
       tfs{4}        = tf_conv();
+      tfs{4}.i      = tfs{3}.o;
       tfs{4}.p(1).a = f*randn(sz2, 'single');
       tfs{4}.p(2).a = zeros(1,sz2(end), 'single');
       % write back
@@ -36,7 +38,7 @@ classdef tfw_linloclin < tfw_i
     
     function ob = fprop(ob)
        %%% Outer Input --> Internal Input
-       ob.tfs{1}.i.a = ob.i.a; 
+       ob.tfs{1}.i.a = ob.i.a; % [M, L, 1, N]
        
        %%% fprop for all
        for i = 1 : numel( ob.tfs )
@@ -44,13 +46,19 @@ classdef tfw_linloclin < tfw_i
          ob.ab.sync();
        end
        
-       %%% Internal Output --> Outer Output: set the loss
-       ob.o.a = ob.tfs{end}.o.a;      
+       %%% Internal Output --> Outer Output
+       % [1,1,2L, N] --> [2,L,N], from matconvnet format to internal format
+       L = size(ob.i.a, 2);
+       N = size(ob.i.a, 4);
+       ob.o.a = reshape(ob.tfs{end}.o.a, [2, L, N] );
     end % fprop
     
     function ob = bprop(ob)
       %%% Outer output --> Internal output
-      ob.tfs{end}.o.d = ob.o.d;
+      % [2,L,N] --> [1,1,2L,N]
+      L = size(ob.o.d, 2);
+      N = size(ob.o.d, 3);
+      ob.tfs{end}.o.d = reshape(ob.o.d, [1,1,2*L,N] );
       
       %%% bprop for all
       for i = numel(ob.tfs) : -1 : 1

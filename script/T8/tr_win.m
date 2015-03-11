@@ -1,7 +1,7 @@
 function tr_win()
 %% config: data dir
 fn_data  = fullfile(...
-  'D:\data\facepose\300-Wnorm_matlab',... % directory 
+  'D:\data\facepose\300-Wnorm_matlab',... % directory
   'tr_rescale_grad.mat');                 % file name
 %% config: model dir
 dir_root = fileparts( fileparts(mfilename) );

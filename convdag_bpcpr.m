@@ -1,4 +1,4 @@
-classdef convdag_bpcpr
+classdef convdag_bpcpr < handle
   %convdag CPR with Back Propagation
   %   A thin wrapper for the DAG, managing training and testing
   
@@ -8,8 +8,6 @@ classdef convdag_bpcpr
     beg_epoch; % beggining epoch
     num_epoch; % number of epoches
     batch_sz;  % batch size
-    dir_mo;    % directory for models
-    iter_mo;   % save model every #iter_mo
     is_tightMem; % if tight memory?
   end
   
@@ -21,13 +19,16 @@ classdef convdag_bpcpr
     cc; % calling context
   end
   
+  events
+    end_it; % end of one iteration (one batch)
+    end_ep; % end of one epoch
+  end
+  
   methods
     function ob = convdag_bpcpr()
       ob.beg_epoch = 1; % begining epoch
       ob.num_epoch = 5; % number of epoches
       ob.batch_sz = 128; % batch size
-      ob.iter_mo = 50; % save model every #iter_mo
-      ob.dir_mo = './mo_zoo/foobar'; % directory for models
       ob.is_tightMem = false;
       
       ob.cc = call_cntxt();
@@ -48,10 +49,9 @@ classdef convdag_bpcpr
         % fire: train one epoch
         ob = prepare_train_one_epoch(ob, t);
         ob = train_one_epoch(ob, X,Y);
-        ob = post_train_one_epoch(ob, t, size(X,4));
+        ob = post_train_one_epoch(ob, t, ob.Nstar);
         
-        % always save the model when one epoch is done
-        ob = save_cur_model(ob);
+        notify(ob, 'end_ep');
       end % for t
       
     end % train
@@ -103,7 +103,7 @@ classdef convdag_bpcpr
       
     end % test
   end % methods
-  
+    
   methods % auxiliary functions for train
     function ob = prepare_train (ob)
 
@@ -125,8 +125,6 @@ classdef convdag_bpcpr
       % indicate it's the training stage
       ob.cc.is_tr = true;
       
-      % make output directory for the model to be saved
-      if ( ~exist(ob.dir_mo, 'file') ), mkdir(ob.dir_mo); end
     end % prepare_train
     
     %%% for training one epoch
@@ -183,10 +181,8 @@ classdef convdag_bpcpr
         %fprintf('gpu free memory = %d\n',...
         %  tmp.FreeMemory/1024/1024);
         
-        % if saving model?
-        if ( mod(i_bat, ob.iter_mo) == 0  )
-          ob = save_cur_model(ob);
-        end
+        notify(ob, 'end_it');
+
       end % for ii
     
     end % train_one_eporch
@@ -240,25 +236,9 @@ classdef convdag_bpcpr
       %ob.the_dag = cl_p_d( ob.the_dag );
       
     end % clear_im_data
-    
-    function fn = get_cur_fnmodel(ob)
-      i_epoch = ob.cc.epoch_cnt;
-      i_iter  = ob.cc.iter_cnt;
-      fn = fullfile(ob.dir_mo,...
-        sprintf('ep%d_it%d.mat',i_epoch,i_iter) );
-    end
-    
-    function ob = save_cur_model(ob)
-      ob = clear_im_data(ob);
-      fn = get_cur_fnmodel(ob);
-      
-      fprintf('saving %s...', fn);
-      save(fn, 'ob');
-      fprintf('done\n');
-    end % save_model
-    
+     
   end % methods
-  
+     
   methods % auxiliary functions for test
     function ob = prepare_test(ob)
       ob.cc.is_tr = false;

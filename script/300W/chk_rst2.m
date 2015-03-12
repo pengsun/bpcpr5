@@ -1,6 +1,6 @@
 %%
-dir_mo = 'C:\Dev\code\bpcpr5\script\T8\mo_zoo\T6';
-it = 1 : 10;
+dir_mo = 'D:\CodeWork\git\bpcpr5\script\T8\mo_zoo\T24';
+it = 1 : 22;
 %%
 for i = 1 : numel(it)
   ii = it(i);
@@ -18,7 +18,11 @@ spec = {...
   'rx-','bx-','gx-','yx-','kx-','mx-'};
 hold on;
 for i = 1 : numel(s)
-  plot( s(i).mag(:), spec{i});
-  %plot( s(i).ss(:), spec{i});
+  ii = 1 + mod(i-1,numel(spec));
+  plot(s(i).ss(:), spec{ii});
+  text(1, s(i).ss(1), num2str(i) );
+%   plot( s(i).mag(:), spec{ii});
+%   text(1, s(i).mag(1), num2str(i) );
+  
 end
 hold off;

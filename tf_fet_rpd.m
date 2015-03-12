@@ -60,7 +60,7 @@ classdef tf_fet_rpd < tf_i
       % [M, L, N] -> [M,L,1,N], the matconvnet format
       ob.o.a = reshape(X, [ob.M,L,1,N]);
       ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      fprintf(' tf_rpd.fprop: %.4fs ', ttt);
+      %fprintf(' tf_rpd.fprop: %.4fs ', ttt);
     end % fprop
     
     function ob = bprop(ob)
@@ -97,7 +97,7 @@ classdef tf_fet_rpd < tf_i
       ob.i(1).d = squeeze( sum(tmp,2) ); % squeeze( [2,1,L,N] )
        
       ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      fprintf(' tf_rpd.bprop: %.4fs ', ttt);
+      %fprintf(' tf_rpd.bprop: %.4fs ', ttt);
       %%% whether bprop for I? (typically doesn't need it when training)
       ob.i(2).d = zeros( size(ob.i(2).a) ); % [W,H,3,N]
       if (~ob.is_bprop_in2), return; end

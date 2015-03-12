@@ -4,8 +4,8 @@ fn_data  = fullfile(...
   'D:\data\facepose\300-Wnorm_matlab',... % directory
   'tr_rescale_grad.mat');                 % file name
 %% config: model dir
-dir_root = fileparts( fileparts(mfilename) );
-dir_mo   = fullfile(dir_root, 'mo_zoo', 'T6');
+dir_root = pwd;
+dir_mo   = fullfile(dir_root, 'mo', 'T16');
 %% init dag: from saved model 
 % beg_epoch = 4;
 % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
@@ -18,11 +18,19 @@ h.beg_epoch = beg_epoch;
 h.Nstar = 3148*20;
 h.num_epoch = 200;
 h.batch_sz = 128;
-h.dir_mo = dir_mo;
-h.iter_mo = 1;
+h.iter_mo = 50;
 %% config: cpu or gpu
-h.the_dag = to_cpu(h.the_dag);
-% h.the_dag = to_gpu(h.the_dag);
+% h.the_dag = to_cpu(h.the_dag);
+h.the_dag = to_gpu(h.the_dag);
+%% add observers
+hpeek = peek();
+% plot
+addlistener(h, 'end_ep', @hpeek.plot_loss);
+% save model epoch and itearation
+hpeek.dir_mo = dir_mo;
+addlistener(h, 'end_it', @hpeek.save_mo_ep_it);
+% save model epoch
+addlistener(h, 'end_ep', @hpeek.save_mo_ep);
 %% do the training
 [X, Y] = load_tr_data(fn_data);
 train(h, X,Y);
@@ -40,14 +48,14 @@ fprintf('done\n');
 function tfs_sr = create_tfs_sr()
 %%% params for stage regressor array
 % #stages
-T = 6;
+T = 16;
 % for feature extractor 
 MM = 15 * ones(1, T);  % #RPD features per point
-rr = [ 0.2*ones(1,12), 0.1*ones(1,12)]; % radius
+rr = [ 0.1*ones(1,12), 0.1*ones(1,12)]; % radius
 % for regressor
 m = 6; % for hidden layers
 K = 34;
-knn = [5*ones(1,8), 3*ones(1,8), 1*ones(1,8)]; % for connection mask
+knn = [5*ones(1,5), 3*ones(1,5), 1*ones(1,6)]; % for connection mask
 
 for j = 1 : T
   % the feature extractor

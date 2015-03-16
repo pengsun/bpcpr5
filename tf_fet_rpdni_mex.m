@@ -120,9 +120,9 @@ classdef tf_fet_rpdni_mex < tf_i
   methods
     function ob = init_param(ob)
       A1 = rand_pnts_knn_convcomb(ob.Z, ob.M);
-      [ob.rcc1, ob.rci1] = to_col_sparcmat(A1);
+      [ob.rcc1, ob.rci1] = to_col_sparmat(A1);
       ob.A2 = rand_pnts_knn_convcomb(ob.Z, ob.M);
-      [ob.rcc2, ob.rci2] = to_col_sparcmat(A2);
+      [ob.rcc2, ob.rci2] = to_col_spacmat(A2);
     end % init_param
   end % methods
   

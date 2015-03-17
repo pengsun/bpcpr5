@@ -1,13 +1,13 @@
 %% mean shape
-%load('D:\data\facepose\lfpwnorm_matlab\tr_rescale_grad.mat', 'p');
-load('~/A/data/facepose/lfpwnorm_matlab/tr_rescale_grad.mat', 'p');
+load('D:\data\facepose\lfpwnorm_matlab\tr_rescale_grad.mat', 'p');
+% load('~/A/data/facepose/lfpwnorm_matlab/tr_rescale_grad.mat', 'p');
 
 ppp = mean(p, 3);
 %% pair wise distance
 d = pdist(ppp', 'euclidean');
 D = squareform(d);
 %% kNN mask
-knn = 4;
+knn = 2;
 L = size(D,1);
 Z = zeros(L, L);
 for i = 1 : L

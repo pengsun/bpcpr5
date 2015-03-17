@@ -1,8 +1,8 @@
-function A = rand_pnts_knn_convcomb(Z, M)
-%RAND_PNTS_KNN_CONVCOMB Summary of this function goes here
+function A = rand_pnts_convcomb(Z, M)
+%RAND_PNTS_CONVCOMB Random "Convex" Combinations using the mesh connection
 % Input:
-%   Z: [L, L] 0/1 knn template
-%   M: [1] #points generated per point
+%   Z: [L, L] 0/1 mesh connection (a mask/template)
+%   M: [1] #points generated per point/landmark
 % Output:
 %   A: [L, ML] convex combination coefficients, A(:,i) is a sum-to-one vec
 %

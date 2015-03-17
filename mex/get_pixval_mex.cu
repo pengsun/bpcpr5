@@ -88,13 +88,13 @@ __global__ void cuda_get_ind_val (const int   H,
   int i_pntx = 0 + ml*2 + n*2*ML; // the convention of the pp storage: x first, y second
   int i_pnty = 1 + ml*2 + n*2*ML;
   // normalized coordinate -> integer coordinate
-  int py = int( float(H) * pp[i_pnty] ); // [0,1] -> [0, H-1]
-  int px = int( float(W) * pp[i_pntx] ); // [0,1] -> [0, W-1]
+  int py = int( float(H) * pp[i_pnty] ); // [0,1] -> {0,1,...,H-1}
+  int px = int( float(W) * pp[i_pntx] ); // [0,1] -> {0,1,...,W-1}
   py = (py<H) ? (py) : (H-1); // make it in the range
   px = (px<W) ? (px) : (W-1); 
   // convert it to linear index to the image I,
-  // i.e., the linear index for (py,px,1,n) at I [H,W,3,N] 
-  int i_pixval = py + px*H + H*W + n*H*W*3;
+  // i.e., the linear index for (py,px,0,n) at I [H,W,3,N] 
+  int i_pixval = py + px*H + n*H*W*3; // py + px*H + 0*W*H + n*H*W*3;
 
 
   //// fill the output

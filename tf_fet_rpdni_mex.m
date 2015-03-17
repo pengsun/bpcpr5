@@ -22,7 +22,7 @@ classdef tf_fet_rpdni_mex < tf_i
   end
   
   methods
-    function obj = tf_fet_rpd(Z)
+    function obj = tf_fet_rpdni_mex(Z)
       %%% internal data
       obj.r = 0.1;
       obj.M = 2;
@@ -36,10 +36,13 @@ classdef tf_fet_rpdni_mex < tf_i
     end
     
     function ob = fprop(ob)
-      ttt = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %%% in 
+      %ttt = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %%% in
+      ob.i(1).a( ob.i(1).a<0.0 ) = 0.0;
+      ob.i(1).a( ob.i(1).a>1-eps ) = 1-eps;
       p = ob.i(1).a; % in 1: p [2,L,N]
       I = ob.i(2).a; % in 2: II [W,H,3,N]
+      
       
       %%% do it: generate the features
       if ( isempty(ob.rcc1) ) % initialize if necessary
@@ -54,12 +57,13 @@ classdef tf_fet_rpdni_mex < tf_i
       % the values: [M*L*N] -> [M,L,1,N], the matconvnet format
       [~,L,N] = size(p);
       ob.o.a = reshape(f1-f2, [ob.M, L, 1, N]);
-      ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      fprintf(' tf_rpd.fprop: %.4fs ', ttt);
+      ob.ab.sync();
+      %ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %fprintf(' tf_rpd.fprop: %.4fs ', ttt);
     end % fprop
     
     function ob = bprop(ob)
-      ttt = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %ttt = tic; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       %%% out and in
       dX = ob.o.d;      % [M,L,1,N]
       dX = squeeze(dX); % [M,L,N]
@@ -88,7 +92,8 @@ classdef tf_fet_rpdni_mex < tf_i
       tmp = (GG1-GG2) .* dXdX; % [2,M,L,N]
       %%% in 1.d: dp [2,L,N]
       ob.i(1).d = squeeze( sum(tmp,2) ); % [2,L,N] = squeeze( [2,1,L,N] )
-      ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      ob.ab.sync();
+      %ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       %fprintf(' tf_rpd.bprop: %.4fs ', ttt);
       
       %%% whether bprop for I? (typically doesn't need it when training)
@@ -96,20 +101,25 @@ classdef tf_fet_rpdni_mex < tf_i
       if (~ob.is_bprop_in2), return; end
       
       %%% bprop for I: in2.d
-      tmp1 = zeros( size(II) );     % [W,H,1,N]
-      tmp1( ob.ind1(:,1) ) = dX(:); % [W,H,1,N], with MLN non-zero elements
-      tmp2 = zeros( size(II) );     % [W,H,1,N]
-      tmp2( ob.ind2(:,1) ) = dX(:); % [W,H,1,N], with MLN non-zero elements
-      tmp = tmp1 - tmp2;            % [W,H,1,N]
+      tmp1 = zeros( size(II) ); % [W,H,3,N]
+      tmp1( ob.ind1 ) = dX(:);  % [W,H,3,N], with MLN non-zero elements
+      tmp2 = zeros( size(II) ); % [W,H,3,N]
+      tmp2( ob.ind2 ) = dX(:);  % [W,H,3,N], with MLN non-zero elements
+      tmp = tmp1 - tmp2;        % [W,H,3,N]
       % write it
       ob.i(2).d(:,:,1,:) = tmp; % leave the other 2 channels
-
+      ob.ab.sync();
     end % bprop
     
     function ob = cvt_data(ob)
       % convert internal state
-      ob.A1 = ob.ab.cvt_data( ob.A1 );
-      ob.A2 = ob.ab.cvt_data( ob.A2 );
+      ob.rcc1 = ob.ab.cvt_data( ob.rcc1 );
+      ob.rci1 = ob.ab.cvt_data( ob.rci1 );
+      ob.rcc2 = ob.ab.cvt_data( ob.rcc2 );
+      ob.rci2 = ob.ab.cvt_data( ob.rci2 );
+      
+      ob.rci1 = uint32( ob.rci1 );
+      ob.rci2 = uint32( ob.rci2 );
       % convert other
       ob = cvt_data@tf_i(ob);
     end % cvt_data
@@ -119,10 +129,19 @@ classdef tf_fet_rpdni_mex < tf_i
   %%% helpers
   methods
     function ob = init_param(ob)
-      A1 = rand_pnts_knn_convcomb(ob.Z, ob.M);
+      A1 = rand_pnts_paircomb(ob.Z, ob.M);
       [ob.rcc1, ob.rci1] = to_col_sparmat(A1);
-      ob.A2 = rand_pnts_knn_convcomb(ob.Z, ob.M);
-      [ob.rcc2, ob.rci2] = to_col_spacmat(A2);
+      A2 = rand_pnts_paircomb(ob.Z, ob.M);
+      [ob.rcc2, ob.rci2] = to_col_sparmat(A2);
+      
+      % convert to the right data format
+      ob.rcc1 = ob.ab.cvt_data( ob.rcc1 );
+      ob.rci1 = ob.ab.cvt_data( ob.rci1 );
+      ob.rcc2 = ob.ab.cvt_data( ob.rcc2 );
+      ob.rci2 = ob.ab.cvt_data( ob.rci2 );
+      
+      ob.rci1 = uint32( ob.rci1 );
+      ob.rci2 = uint32( ob.rci2 );
     end % init_param
   end % methods
   

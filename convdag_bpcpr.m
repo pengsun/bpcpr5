@@ -56,17 +56,17 @@ classdef convdag_bpcpr < handle
       
     end % train
     
-    function Ypre = test (ob, X)
+    function pPre = test (ob, pInit, I)
       
       % enforced single
-      X = single(X);
+      I = single(I);
 
       % prepare
       ob = prepare_test(ob);
       
       % initialize a batch generator
       hbat = bat_gentor();
-      N = size(X, 4);
+      N = size(I, 4);
       hbat = reset(hbat, N, ob.batch_sz);
       
       % test every batch
@@ -77,20 +77,22 @@ classdef convdag_bpcpr < handle
      
         % get batch 
         ind = get_idx_orig(hbat, i_bat);
-        X_bat = X(:,:,:, ind);
-        Y_bat_trash = 0; % Just making the fprop() goes. Okay with a scalar.
+        bat_pInit     = pInit(:,:,ind);
+        bat_I         = I(:,:,:, ind);
+        bat_trash_pGT = 0; % Just making the fprop() goes. Okay with a scalar.
         
         % set source nodes
-        ob.the_dag.i(1).a = X_bat;
-        ob.the_dag.i(2).a = Y_bat_trash;
+        ob.the_dag.i(1).a = bat_pInit;
+        ob.the_dag.i(2).a = bat_I;
+        ob.the_dag.i(3).a = bat_trash_pGT;
         
         % fire: do the batch testing by calling fprop() on each transformer
         ob.the_dag = fprop( ob.the_dag );
         
         % fetch and concatenate the results
-        Ypre_bat = squeeze( ob.the_dag.get_Ypre() );
-        if (i_bat==1), Ypre = Ypre_bat;
-        else           Ypre = cat(2,Ypre,Ypre_bat); end
+        bat_pPre = squeeze( ob.the_dag.get_pPre() );
+        if (i_bat==1), pPre = bat_pPre;
+        else           pPre = cat(3,pPre,bat_pPre); end
         t_elapsed = toc(t_elapsed); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % print 

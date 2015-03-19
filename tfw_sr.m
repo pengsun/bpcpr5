@@ -37,8 +37,9 @@ classdef tfw_sr < tfw_i
        ob.tfs{2}.i(2).a = ob.i(2).a; % I [W,H,3,N]
        
        %%% fprop for all
-       for i = 1 : numel( ob.tfs ) % ob.sync() is called in the tfs
+       for i = 1 : numel( ob.tfs ) 
          ob.tfs{i} = fprop(ob.tfs{i});
+         ob.ab.sync();
        end
        
        %%% Internal Output --> Outer Output: 
@@ -50,8 +51,9 @@ classdef tfw_sr < tfw_i
       ob.tfs{end}.o.d = ob.o.d; % dPre: [2,L,N]
          
       %%% bprop for all
-      for i = numel(ob.tfs) : -1 : 1 % ob.sync() is called in the tfs
+      for i = numel(ob.tfs) : -1 : 1 
         ob.tfs{i} = bprop(ob.tfs{i});
+        ob.ab.sync();
       end
       
       %%% Internal Input --> Outer Input

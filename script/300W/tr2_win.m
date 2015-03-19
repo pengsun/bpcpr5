@@ -7,13 +7,13 @@ fn_data  = fullfile(...
 dir_root = pwd;
 dir_mo   = fullfile(dir_root, 'mo', 'T12');
 %% init dag: from saved model 
-% beg_epoch = 2;
-% % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
-% fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
-% h = create_dag_from_file (fn_mo);
+beg_epoch = 40;
+% fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
+fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
+h = create_dag_from_file (fn_mo);
 %% init dag: from scratch
-beg_epoch = 1; 
-h = create_dag_from_scratch ();
+% beg_epoch = 1; 
+% h = create_dag_from_scratch ();
 %% config: for training algorithm
 h.beg_epoch = beg_epoch;
 h.Nstar = 3148*20;
@@ -36,7 +36,7 @@ hpeek = peek();
 addlistener(h, 'end_ep', @hpeek.plot_loss);
 % save model epoch and itearation
 hpeek.dir_mo = dir_mo;
-hpeek.iter_mo = 150;
+hpeek.iter_mo = 1500;
 addlistener(h, 'end_it', @hpeek.save_mo_ep_it);
 % save model epoch
 addlistener(h, 'end_ep', @hpeek.save_mo_ep);

@@ -66,6 +66,10 @@ classdef tfw_cpr < tfw_i
       %ob.i.d = ob.tfs{1}.i.d;
     end % bprop
     
+    function pPre = get_pPre(ob)
+    % a shorthand to get the prediction
+      pPre = ob.tfs{end-1}.o.a;
+    end % get_pPre
   end % methods
   
 end

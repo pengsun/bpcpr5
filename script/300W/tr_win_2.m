@@ -7,13 +7,13 @@ fn_data  = fullfile(...
 dir_root = pwd;
 dir_mo   = fullfile(dir_root, 'mo', 'T12');
 %% init dag: from saved model 
-beg_epoch = 110;
-% fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
-fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
-h = create_dag_from_file (fn_mo);
+% beg_epoch = 110;
+% % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
+% fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
+% h = create_dag_from_file (fn_mo);
 %% init dag: from scratch
-% beg_epoch = 1; 
-% h = create_dag_from_scratch ();
+beg_epoch = 1; 
+h = create_dag_from_scratch ();
 %% config: for training algorithm
 h.beg_epoch = beg_epoch;
 h.Nstar = 3148*20;
@@ -60,7 +60,7 @@ function tfs_sr = create_tfs_sr()
 T = 12;
 % for feature extractor 
 MM = 12 * ones(1, T);  % #RPD features per point
-rr = [ 0.1*ones(1,12), 0.1*ones(1,12)]; % radius
+rr = [ 0.09*ones(1,6), 0.04*ones(1,18)]; % radius
 % for regressor
 m = 6; % for hidden layers
 K = 34;
@@ -69,9 +69,8 @@ knn = 3*ones(1,T);
 
 for j = 1 : T
   % the feature extractor
-  Z = get_Z();
+  Z = get_Z( rr(j) );
   hfet   = tf_fet_rpdni_mex(Z);
-  hfet.r = rr(j);
   hfet.M = MM(j);
   
   % the regressor
@@ -94,8 +93,12 @@ function pMean = get_pMean ()
 tmp = load('pMean_300W.mat');
 pMean = tmp.pMean;
 
-function Z = get_Z ()
-tmp = load('lfpw_randpair_r0.20.mat');
+function Z = get_Z (r)
+fn = sprintf('lfpw_randpair_r%1.2f.mat', r);
+if ( ~exist(fn,'file') )
+  error('The connection template(mask) %s does not exist.', fn);  
+end
+tmp = load(fn);
 Z = tmp.Z;
 
 function ob = create_dag_from_file (fn_mo)

@@ -16,7 +16,7 @@ function A = rand_pnts_paircomb(Z, M)
     % #points for the convex hull
     ind = find( Z(:,i) > 0 );
     KK = numel(ind);
-    assert(KK >= 2);
+    assert(KK >= 2, 'KK >= 2: connect to at least one point.');
     K = 2;
     
     for j = 1 : M

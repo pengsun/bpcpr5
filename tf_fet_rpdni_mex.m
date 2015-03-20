@@ -3,7 +3,6 @@ classdef tf_fet_rpdni_mex < tf_i
   %   Detailed explanation goes here
   
   properties
-    r; % [1] radius
     M; % [1] #pixel difference pairs per point
     
     % random combination that mimics the sparse matrix with up to K non
@@ -24,7 +23,6 @@ classdef tf_fet_rpdni_mex < tf_i
   methods
     function obj = tf_fet_rpdni_mex(Z)
       %%% internal data
-      obj.r = 0.1;
       obj.M = 2;
       obj.Z = Z; 
       

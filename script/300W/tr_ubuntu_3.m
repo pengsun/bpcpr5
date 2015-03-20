@@ -71,9 +71,8 @@ knn = [5*ones(1,6), 3*ones(1,12), 1*ones(1,6)]; % for connection mask
 
 for j = 1 : T
   % the feature extractor
-  Z = get_Z();
+  Z = get_Z( rr(j) );
   hfet   = tf_fet_rpdni_mex(Z);
-  hfet.r = rr(j);
   hfet.M = MM(j);
   
   % the regressor
@@ -96,8 +95,12 @@ function pMean = get_pMean ()
 tmp = load('pMean_300W.mat');
 pMean = tmp.pMean;
 
-function Z = get_Z ()
-tmp = load('lfpw_randpair_r0.20.mat');
+function Z = get_Z (r)
+fn = sprintf('lfpw_randpair_r%1.2f.mat', r);
+if ( ~exist(fn,'file') )
+  error('The connection template(mask) %s does not exist.', fn);  
+end
+tmp = load(fn);
 Z = tmp.Z;
 
 function ob = create_dag_from_file (fn_mo)

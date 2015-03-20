@@ -1,26 +1,26 @@
-function tr2_win()
+function tr_ubuntu_3()
 %% config: data dir
 fn_data  = fullfile(...
-  'D:\data\facepose\300-Wnorm_matlab',... % directory
-  'tr_rescale_grad.mat');                 % file name
+  '/home/ubuntu/A/data/facepose/300-Wnorm_matlab',... % directory
+  'tr_rescale_grad.mat');                             % file name
 %% config: model dir
 dir_root = pwd;
-dir_mo   = fullfile(dir_root, 'mo', 'T12');
+dir_mo   = fullfile(dir_root, 'mo', 'T24_eta0.1');
 %% init dag: from saved model 
-beg_epoch = 40;
-% fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
-fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
-h = create_dag_from_file (fn_mo);
+% beg_epoch = 40;
+% % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
+% fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
+% h = create_dag_from_file (fn_mo);
 %% init dag: from scratch
-% beg_epoch = 1; 
-% h = create_dag_from_scratch ();
+beg_epoch = 1; 
+h = create_dag_from_scratch ();
 %% config: for training algorithm
 h.beg_epoch = beg_epoch;
 h.Nstar = 3148*20;
 h.num_epoch = 200;
-h.batch_sz = 126;
+h.batch_sz = 128;
 %% config: the optimization algorithms
-eta = 1e-3;
+eta = 1e-2;
 h.opt_arr = opt_1storder();
 for i = 1 : numel( h.the_dag.p )
   h.opt_arr(i)     = opt_1storder();
@@ -32,13 +32,15 @@ end
 h.the_dag = to_gpu(h.the_dag);
 %% add observers
 hpeek = peek();
-% plot
-addlistener(h, 'end_ep', @hpeek.plot_loss);
-% save model epoch and itearation
+%%% plot
+% addlistener(h, 'end_ep', @hpeek.plot_loss);
+
+%%% save model epoch and itearation
 hpeek.dir_mo = dir_mo;
-hpeek.iter_mo = 1500;
-addlistener(h, 'end_it', @hpeek.save_mo_ep_it);
-% save model epoch
+% hpeek.iter_mo = 1500;
+% addlistener(h, 'end_it', @hpeek.save_mo_ep_it);
+
+%%% save model epoch
 addlistener(h, 'end_ep', @hpeek.save_mo_ep);
 %% do the training
 [X, Y] = load_tr_data(fn_data);
@@ -57,15 +59,15 @@ fprintf('done\n');
 function tfs_sr = create_tfs_sr()
 %%% params for stage regressor array
 % #stages
-T = 12;
+T = 24;
 % for feature extractor 
-MM = 12 * ones(1, T);  % #RPD features per point
-rr = [ 0.1*ones(1,12), 0.1*ones(1,12)]; % radius
+MM = 15 * ones(1, T);  % #RPD features per point
+rr = [ 0.09*ones(1,6), 0.04*ones(1,18)]; % radius
 % for regressor
 m = 6; % for hidden layers
-K = 34;
-% knn = [5*ones(1,5), 3*ones(1,5), 1*ones(1,6)]; % for connection mask
-knn = 3*ones(1,T);
+K = 68;
+knn = [5*ones(1,6), 3*ones(1,12), 1*ones(1,6)]; % for connection mask
+% knn = 3*ones(1,T);
 
 for j = 1 : T
   % the feature extractor
@@ -77,7 +79,7 @@ for j = 1 : T
   % the regressor
   % local connection mask
   if     (K==34), A = get_mask_lfpw_K34( MM(j), m, knn(j) ); 
-  elseif (K==68), A = get_mask_lfpw_K34( MM(j), m, knn(j) ); 
+  elseif (K==68), A = get_mask_lfpw_K68( MM(j), m, knn(j) ); 
   end
   % [ML, mK] --> [M,L,1,mK]
   L = size(Z,1);

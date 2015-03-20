@@ -5,7 +5,7 @@ dir_root = 'D:\CodeWork\git\bpcpr5';
 dir_data = 'D:\data\facepose\300-Wnorm_matlab';
 if ( nargin==0 )
   ep = 1 : 98;
-  batch_sz = 16;
+  batch_sz = 64;
   dir_mo = fullfile(dir_root,'\script\300W\mo\T24');
   fn_data = fullfile(dir_data,'te_rescale_grad.mat');
   fn_mo_tmpl = 'ep%d.mat';

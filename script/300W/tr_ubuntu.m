@@ -7,13 +7,13 @@ fn_data  = fullfile(...
 dir_root = pwd;
 dir_mo   = fullfile(dir_root, 'mo', 'T24');
 %% init dag: from saved model 
-% beg_epoch = 40;
-% % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
-% fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
-% h = create_dag_from_file (fn_mo);
+beg_epoch = 4;
+% fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
+fn_mo = fullfile(dir_mo, sprintf('ep%d.mat', beg_epoch-1) );
+h = create_dag_from_file (fn_mo);
 %% init dag: from scratch
-beg_epoch = 1; 
-h = create_dag_from_scratch ();
+%beg_epoch = 1; 
+%h = create_dag_from_scratch ();
 %% config: for training algorithm
 h.beg_epoch = beg_epoch;
 h.Nstar = 3148*20;

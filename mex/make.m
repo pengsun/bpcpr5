@@ -23,7 +23,7 @@ opts.imreadJpegLinkFlags = {'-ljpeg'};
 opts.verbose          = 1;
 opts.debug            = false;
 opts.cudaMethod       = 'nvcc' ;
-opts.cudaRoot         = 'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v6.5' ;
+opts.cudaRoot         = [] ;
 opts.cudaArch         = [] ;
 opts.defCudaArch      = [...
   '-gencode=arch=compute_20,code=\"sm_20,compute_20\" '...

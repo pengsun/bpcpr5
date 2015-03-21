@@ -5,7 +5,7 @@ fn_data  = fullfile(...
   'tr_rescale_grad.mat');                             % file name
 %% config: model dir
 dir_root = pwd;
-dir_mo   = fullfile(dir_root, 'mo', 'T24_eta0.1');
+dir_mo   = fullfile(dir_root, 'mo', 'T24_eta0.01');
 %% init dag: from saved model 
 % beg_epoch = 40;
 % % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
@@ -16,7 +16,7 @@ beg_epoch = 1;
 h = create_dag_from_scratch ();
 %% config: for training algorithm
 h.beg_epoch = beg_epoch;
-h.Nstar = 3148*20;
+h.Nstar = 3148*50;
 h.num_epoch = 200;
 h.batch_sz = 128;
 %% config: the optimization algorithms

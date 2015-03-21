@@ -1,11 +1,11 @@
-function tr_ubuntu_3()
+function tr_ubuntu_4()
 %% config: data dir
 fn_data  = fullfile(...
   '/home/ubuntu/A/data/facepose/300-Wnorm_matlab',... % directory
   'tr_rescale_grad.mat');                             % file name
 %% config: model dir
 dir_root = pwd;
-dir_mo   = fullfile(dir_root, 'mo', 'T24_eta0.01');
+dir_mo   = fullfile(dir_root, 'mo', 'T24_aug100');
 %% init dag: from saved model 
 % beg_epoch = 40;
 % % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );
@@ -16,9 +16,9 @@ beg_epoch = 1;
 h = create_dag_from_scratch ();
 %% config: for training algorithm
 h.beg_epoch = beg_epoch;
-h.Nstar = 3148*20;
+h.Nstar = 3148*100;
 h.num_epoch = 200;
-h.batch_sz = 128;
+h.batch_sz = 192;
 %% config: the optimization algorithms
 eta = 1e-2;
 h.opt_arr = opt_1storder();

@@ -56,6 +56,8 @@ __global__ void cuda_get_pp_by_rc (const int      K,
   // write to the target
   *(pp + dim_pnt + ml*2 + n*2*ML) = val;
 
+  __syncthreads();
+
 }
 
 __global__ void cuda_get_ind_val (const int   H,
@@ -101,6 +103,8 @@ __global__ void cuda_get_ind_val (const int   H,
   int i_out = ml + ML*n; // the linear index for the output 
   f[i_out] = I[i_pixval];  // fill the feature f
   ind[i_out] = (uint32_T)(i_pixval + 1);  // fill the index ind: 0-base -> 1-base
+
+  __syncthreads();
 
 }
 

@@ -54,7 +54,8 @@ classdef tf_fet_rpdni_mex < tf_i
       %%% out 1: X [M, L, 1, N]
       % the values: [M*L*N] -> [M,L,1,N], the matconvnet format
       [~,L,N] = size(p);
-      ob.o.a = reshape(f1-f2, [ob.M, L, 1, N]);
+      ob.o.a = reshape(f1-f2,...
+        [ob.M, L, 1, N]);
       ob.ab.sync();
       %ttt = toc(ttt); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       %fprintf(' tf_rpd.fprop: %.4fs ', ttt);

@@ -58,10 +58,10 @@ classdef batpose_gentor
       % transform the mean shape as the initial pose
       bat_pInit = zeros( size(bat_pGT) );
       pMean = mean(pGT,3); % [2,L]
+      pGTix2 = pGT(:,:,ix2);
+      
       parfor i = 1 : numel(ix2)
-        ix = ix2(i);
-        
-        p_moving = pGT(:,:,ix); % [2,L]
+        p_moving = pGTix2(:,:,i); % [2,L]
         z = fitgeotrans(p_moving', pMean', 'nonreflectivesimilarity');
         p_moved = transformPointsForward(...
           z, [p_moving(1,:)', p_moving(2,:)'] );

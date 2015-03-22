@@ -1,5 +1,5 @@
 classdef tfw_cpr_pell < tfw_i
-  %TFW_GPU_CPR_PELL Cascade Pose Reg, outputting pose (p) and loss (ell)
+  %TFW_CPR_PELL Cascade Pose Reg, outputting pose (p) and loss (ell)
   %   The graph input:  pInit, I, pGT
   %   The graph output: pPre, ell
   
@@ -40,7 +40,7 @@ classdef tfw_cpr_pell < tfw_i
       
       %%% Collect the parameters
       ob.p = dag_util.collect_params( ob.tfs );
-    end % tfw_gpu_cpr
+    end % tfw_cpr_pell
     
     function ob = fprop(ob)
        %%% Outer Input --> Internal Input

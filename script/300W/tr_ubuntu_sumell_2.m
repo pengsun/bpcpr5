@@ -1,11 +1,11 @@
-function tr_ubuntu_T24_sumell()
+function tr_ubuntu_sumell_2()
 %% config: data dir
 fn_data  = fullfile(...
   '/home/ubuntu/A/data/facepose/300-Wnorm_matlab',... % directory
   'tr_rescale_grad.mat');                             % file name
 %% config: model dir
 dir_root = pwd;
-dir_mo   = fullfile(dir_root, 'mo', 'T24_sumell_aug100');
+dir_mo   = fullfile(dir_root, 'mo', 'T24_sumell_stg6_aug100');
 %% init dag: from saved model 
 % beg_epoch = 40;
 % % fn_mo = fullfile(dir_mo, sprintf('ep%d_it%d.mat', beg_epoch-1, 30) );

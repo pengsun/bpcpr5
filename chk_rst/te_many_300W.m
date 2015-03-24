@@ -75,7 +75,7 @@ set(hhh, 'Interpreter','none');
     % the line style
     sty = {...
       'ro-','bo-','go-','mo-','ko-',...
-      'r*-','b*-','g*-','m*-','k*-'};
+      'bp-','gp-','mp-','kp-','rp-',};
     ii = 1 + mod(ind_dirmo-1, numel(sty));
     
     % plot the line

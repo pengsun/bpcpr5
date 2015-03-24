@@ -4,7 +4,7 @@ clearvars -except I p
 ep = 27;
 dir_root   = 'D:\CodeWork\git\bpcpr5';
 dir_data   = 'D:\data\facepose\300-Wnorm_matlab';
-dir_mo     = fullfile(dir_root,'\script\300W\mo\T24_eta0.01');
+dir_mo     = fullfile(dir_root,'\script\300W\mo\T24_sumell_aug100');
 fn_data    = fullfile(dir_data,'te_rescale_grad.mat');
 fn_mo_tmpl = 'ep%d.mat';
 
@@ -42,28 +42,25 @@ II = bat_I(:,:,1,1);
 imshow(II, []);
 [H, W] = size(II); 
 
+%%%%%%%%
 hold on;
-% show the ground truth
-% plot(H*bat_pGT(1,:,1), W*bat_pGT(2,:,2),...
-%     'r.', 'markersize',12,...
-%     'parent',hax);
+
+% show the face
 plot_face_lfpw(H*bat_pGT(1,:,1), W*bat_pGT(2,:,2),...
     'r', 'markersize',12,...
     'parent',hax);
 % show the stage 0
-ps = gather( ob.the_dag.tfs{2}.i(1).a );
-% hp = plot(H*ps(1,:,1), W*ps(2,:,2),...
-%   'b.', 'markersize',12,...
-%   'parent',hax);
+ps = gather( ob.the_dag.tfs{3}.i(1).a );
 hp = plot_face_lfpw(H*ps(1,:,1), W*ps(2,:,2),...
   'b', 'markersize',12,...
   'parent',hax);
 waitforbuttonpress;
+
 % show the stages 1 to T
-T = numel(ob.the_dag.tfs) - 2;
+T = numel(ob.the_dag.tfs) - 3;
 for i = 1 : T
   % for CPR
-  ps = gather( ob.the_dag.tfs{i+1}.o.a );
+  ps = gather( ob.the_dag.tfs{2+i}.o(1).a );
   delete(hp);
 
   hp = plot_face_lfpw(H*ps(1,:,1), W*ps(2,:,2),...
@@ -71,4 +68,6 @@ for i = 1 : T
     'parent',hax);
   waitforbuttonpress;
 end
+
 hold off;
+%%%%%%%%%

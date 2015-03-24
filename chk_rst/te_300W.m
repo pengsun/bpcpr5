@@ -4,7 +4,7 @@ function [err, err_ep] =  te_300W(varargin)
 dir_root = 'D:\CodeWork\git\bpcpr5';
 dir_data = 'D:\data\facepose\300-Wnorm_matlab';
 if ( nargin==0 )
-  ep = 1 : 14;
+  ep = 1 : 31;
   batch_sz = 16;
   dir_mo = fullfile(dir_root,'\script\300W\mo\T24_aug200');
   fn_data = fullfile(dir_data,'te_rescale_grad.mat');
@@ -26,8 +26,7 @@ end
 fprintf('data: %s\n', fn_data);
 
 % plot
-err_ep = 0;
-err = 1;
+[err, err_ep] = deal([]);
 figure;
 hax = axes;
 title(dir_mo, 'Interpreter','none');
@@ -49,7 +48,7 @@ for i = 1 : numel(ep)
   pPre = gather(pPre);
 
   % show the error
-  err(1+i) = calc_pupil_dist(pPre, pGT);
+  err    = [err, calc_pupil_dist(pPre, pGT)];
   err_ep = [err_ep, ep(i)];
   plot_err(hax, err_ep, err)
   

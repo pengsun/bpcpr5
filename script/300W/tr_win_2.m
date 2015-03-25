@@ -18,7 +18,7 @@ h = create_dag_from_scratch ();
 h.beg_epoch = beg_epoch;
 h.Nstar = 3148*20;
 h.num_epoch = 200;
-h.batch_sz = 126;
+h.batch_sz = 16;
 %% config: the optimization algorithms
 eta = 1e-3;
 h.opt_arr = opt_1storder();

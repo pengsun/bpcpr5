@@ -49,7 +49,7 @@ train(h, X,Y);
 function h = create_dag_from_scratch ()
 fprintf('create_dag_from_scratch...');
 h = convdag_bpcpr();
-for iStage = 1 : 6
+for iStage = 1 : 12
   tfs_cpr_pell{iStage} = create_cpr_pell (iStage);
 end
 h.the_dag = tfw_cpr_sumell(tfs_cpr_pell);

@@ -1,15 +1,15 @@
 %% clear except
 clearvars -except I p
 %% config 
-ep = 27;
+ep = 30;
 dir_root   = 'D:\CodeWork\git\bpcpr5';
 dir_data   = 'D:\data\facepose\300-Wnorm_matlab';
-dir_mo     = fullfile(dir_root,'\script\300W\mo\T24_sumell_aug100');
+dir_mo     = fullfile(dir_root,'\script\300W\mo\T24_sumell_stg6_aug200_eta0.001');
 fn_data    = fullfile(dir_data,'te_rescale_grad.mat');
 fn_mo_tmpl = 'ep%d.mat';
 
 %% load data
-ind = 345;
+ind = 300;
 if ( ~exist('I','var') || ~exist('p','var') )
   load(fn_data, 'I','p');
 end
@@ -36,7 +36,7 @@ fprintf('pupil distance = %d\n', err(end) );
 
 %% visualize the results
 % show the image
-figure('WindowStyle','dock');
+figure('WindowStyle','dock','color','w');
 hax = axes;
 II = bat_I(:,:,1,1);
 imshow(II, []);

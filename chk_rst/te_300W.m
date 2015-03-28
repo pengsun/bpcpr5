@@ -4,9 +4,9 @@ function [err, err_ep] =  te_300W(varargin)
 dir_root = 'D:\CodeWork\git\bpcpr5';
 dir_data = 'D:\data\facepose\300-Wnorm_matlab';
 if ( nargin==0 )
-  ep = 1 : 31;
+  ep = 30 : 50;
   batch_sz = 16;
-  dir_mo = fullfile(dir_root,'\script\300W\mo\T24_aug200');
+  dir_mo = fullfile(dir_root,'\script\300W\mo\T24_sumell_stg6_aug100');
   fn_data = fullfile(dir_data,'te_rescale_grad.mat');
   fn_mo_tmpl = 'ep%d.mat';
 elseif ( nargin==5 )
@@ -37,8 +37,10 @@ for i = 1 : numel(ep)
   fn_mo = sprintf(fn_mo_tmpl, ep(i));
   ffn_mo = fullfile(dir_mo, fn_mo);
   if ( ~exist(ffn_mo,'file') )
-    fprintf('%s not found, break and stop.\n', ffn_mo);
-    break; 
+%     fprintf('%s not found, break and stop.\n', ffn_mo);
+%     break; 
+    fprintf('%s not found, continue.\n', ffn_mo);
+    continue;
   end
   load(ffn_mo, 'ob');
   % get ob from here

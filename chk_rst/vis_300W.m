@@ -4,12 +4,12 @@ clearvars -except I p
 ep = 27;
 dir_root   = 'D:\CodeWork\git\bpcpr5';
 dir_data   = 'D:\data\facepose\300-Wnorm_matlab';
-dir_mo     = fullfile(dir_root,'\script\300W\mo\T24_eta0.01');
+dir_mo     = fullfile(dir_root,'\script\300W\mo\T24_aug200');
 fn_data    = fullfile(dir_data,'te_rescale_grad.mat');
 fn_mo_tmpl = 'ep%d.mat';
 
 %% load data
-ind = 345;
+ind = 300;
 if ( ~exist('I','var') || ~exist('p','var') )
   load(fn_data, 'I','p');
 end
@@ -61,7 +61,7 @@ hp = plot_face_lfpw(H*ps(1,:,1), W*ps(2,:,2),...
 waitforbuttonpress;
 % show the stages 1 to T
 T = numel(ob.the_dag.tfs) - 2;
-for i = 1 : T
+for i = 1 : 0
   % for CPR
   ps = gather( ob.the_dag.tfs{i+1}.o.a );
   delete(hp);

@@ -16,6 +16,8 @@ A neural network formulation for Cascaded Pose Regression (CPR) applied to Face 
 
 `util`: helper functions
 
+`cache`: pre-compute data
+
 `script`: scripts for training
 
 `chk_rst`: scripts for results inspection

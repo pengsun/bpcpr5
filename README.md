@@ -3,12 +3,13 @@ A neural network formulation for Cascaded Pose Regression (CPR) applied to Face 
 
 ## Install
 1. Install [the Matlab DAG network](https://github.com/pengsun/MatConvDAG) by following the instruction therein.
-2. Run the script `setup_path.m`. Note that you need modify the code before running to specify the path of the required third party toolbox.
+2. Run the `setup_path.m` to add path. Note that you need modify the code before running to specify the path of the required third party toolbox.
+3. Run the `mex\make.m` to compile the mex file. Basically it calls the nvcc compiler in the CUDA toolkit to compile the `*.cu` code for the mex file.
 
 ## Folder Layout
 `tf_*.m` and `tfw_*.m`: transformer for the Graph Transformer Network (GTN), a.k.a. DAG netowrk. In this project we view the whole network as a transformer that composites many sub-transformers
 
-`convdag_bpcpr.m`: A thin wrapper of the whole network, managing training, testing, etc.
+`convdag_bpcpr.m`: a thin wrapper of the whole network, managing training, testing, etc. 
 
 `peek.m`: the observer (a Design Pattern) for `convdag_bpcpr.m`, managing model saving, training loss plotting on the fly, etc.
 
@@ -16,7 +17,7 @@ A neural network formulation for Cascaded Pose Regression (CPR) applied to Face 
 
 `util`: helper functions
 
-`cache`: pre-compute data
+`cache`: pre-computed data
 
 `script`: scripts for training
 

@@ -1,5 +1,5 @@
 # bpcpr: Cascade Pose Regression with Back Propagation
-A neural network formulation for Cascaded Pose Regression (CPR) applied to Face Alignment. Implement the algorithm in [2] which is almost the same with [1], where the parameters jointly tuned for the whole CPR algorithmic pipeline. See e.g., [3] for original CPR based face alignment.
+A neural network formulation for Cascaded Pose Regression (CPR) applied to Face Alignment. Implement the algorithm in [2] which is almost the same with [1], where the parameters are jointly tuned for the whole CPR algorithmic pipeline. See e.g., [3] for original CPR based face alignment.
 
 ## Install
 1. Install [the Matlab DAG network](https://github.com/pengsun/MatConvDAG) by following the instruction therein.

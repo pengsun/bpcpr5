@@ -26,6 +26,6 @@ A neural network formulation for Cascaded Pose Regression (CPR) applied to Face 
 ## References
 [1]. Baoguang Shi, Xiang Bai, Wenyu Liu, Jingdong Wang, "Deep Regression for Face Alignment", arXiv:1409.5230, 2014
 
-[2]. Peng Sun, James K. Min, Guanglei Xiong. Globally Tuned Cascade Pose Regression via Back Propagation with Application in 2D Face Pose Estimation and Heart Segmentation in 3D CT Images
+[2]. Peng Sun, James K. Min, Guanglei Xiong. Globally Tuned Cascade Pose Regression via Back Propagation with Application in 2D Face Pose Estimation and Heart Segmentation in 3D CT Images, http://arxiv.org/abs/1503.08843, 2015
 
 [3]. Ren, Shaoqing, Cao, Xudong, Wei, Yichen, and Sun, Jian. Face alignment at 3000 fps via regressing local binary features. CVPR 2014
